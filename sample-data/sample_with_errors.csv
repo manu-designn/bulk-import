@@ -1,6 +1,0 @@
-name,email,age,department
-John Smith,john.smith@example.com,34,Engineering
-,missing.name@example.com,29,Marketing
-Wei Chen,not-an-email,41,Finance
-Ana Torres,ana.torres@example.com,-5,Sales
-John Smith,john.smith@example.com,34,Engineering
