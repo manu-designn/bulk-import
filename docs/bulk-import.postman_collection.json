@@ -1,0 +1,137 @@
+{
+  "info": {
+    "name": "Bulk Data Import & Validation System",
+    "description": "Upload, status polling, records, summary, list-all, and health check for the Bulk Import API.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "jobId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Upload file (valid sample)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/v1/imports",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "file", "type": "file", "src": "sample-data/sample_valid.csv" }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Upload file (with validation errors + duplicate)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/v1/imports",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "file", "type": "file", "src": "sample-data/sample_with_errors.csv" }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Re-upload same file (idempotency check)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/v1/imports",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "file", "type": "file", "src": "sample-data/sample_valid.csv" }
+          ]
+        },
+        "description": "Run this a second time after 'Upload file (valid sample)' with the same file unmodified. Should return the SAME job id, not create a new one."
+      },
+      "response": []
+    },
+    {
+      "name": "Get job status",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/imports/{{jobId}}",
+        "description": "Set {{jobId}} to an id returned from an upload request. Poll until status is COMPLETED / PARTIALLY_COMPLETED / FAILED."
+      },
+      "response": []
+    },
+    {
+      "name": "List all jobs",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/imports?page=0&size=20&sort=createdAt,desc",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "imports"],
+          "query": [
+            { "key": "page", "value": "0" },
+            { "key": "size", "value": "20" },
+            { "key": "sort", "value": "createdAt,desc" }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get job records (paginated)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/api/v1/imports/{{jobId}}/records?page=0&size=20",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "v1", "imports", "{{jobId}}", "records"],
+          "query": [
+            { "key": "page", "value": "0" },
+            { "key": "size", "value": "20" }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get job summary",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/imports/{{jobId}}/summary"
+      },
+      "response": []
+    },
+    {
+      "name": "Upload unsupported file type (edge case)",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/v1/imports",
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "file", "type": "file", "src": "README.md" }
+          ]
+        },
+        "description": "Expect 415 Unsupported Media Type."
+      },
+      "response": []
+    },
+    {
+      "name": "Get unknown job (edge case)",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/imports/does-not-exist"
+      },
+      "response": []
+    },
+    {
+      "name": "Health check",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/actuator/health"
+      },
+      "response": []
+    }
+  ]
+}

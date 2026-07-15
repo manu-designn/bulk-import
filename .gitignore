@@ -1,0 +1,20 @@
+# Maven
+target/
+
+# Eclipse / STS
+.classpath
+.project
+.settings/
+.metadata/
+
+# IntelliJ (in case anyone opens it there too)
+.idea/
+*.iml
+
+# Application runtime output (created when the app runs, not part of source)
+import-files/
+data/
+logs/
+
+# OS
+.DS_Store
